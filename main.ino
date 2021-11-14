@@ -5,21 +5,12 @@
 #define BRIGHTNESS 32
 #define LED_TYPE WS2812B
 #define COLOR_ORDER GRB
-CRGB setupLeds[NUM_LEDS];
 CRGB leds[NUM_LEDS];
 
 void setup()
 {
-	FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(setupLeds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+	FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 	FastLED.setBrightness(BRIGHTNESS);
-
-    remapLeds(setupLeds, leds);
-
-    leds[59] = CRGB::White;
-	leds[14] = CRGB::White;
-	leds[29] = CRGB::White;
-	leds[44] = CRGB::White;
-	FastLED.show();
 }
 
 void loop()
@@ -27,11 +18,12 @@ void loop()
 	
 }
 
-void remapLeds(CRGB* setupLeds, CRGB* remapedLeds) {
+void remapLeds(CRGB* leds) {
+    CRGB tempLeds[NUM_LEDS];
     for (int i = 0; i < NUM_LEDS; i++)
     {
         int currentLed = (i <= 29) ? (i - 30) : (i + 30);
-        leds[i] = setupLeds[currentLed];
+        tempLeds[i] = leds[currentLed];
     }
-    
+    leds = tempLeds;
 }
