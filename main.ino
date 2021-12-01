@@ -1,4 +1,5 @@
 #include <FastLED.h>
+#include <WiFiManager.h>
 
 #define LED_PIN 21
 #define NUM_LEDS 60
@@ -9,6 +10,10 @@ CRGB leds[NUM_LEDS];
 
 void setup()
 {
+    WiFiManager wifiManager;
+    wifiManager.autoConnect();
+    wifiManager.setConfigPortalTimeout(180);
+
 	FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 	FastLED.setBrightness(BRIGHTNESS);
 }
