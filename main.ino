@@ -1,5 +1,11 @@
 #include <FastLED.h>
 #include <WiFiManager.h>
+#include <WiFi.h>
+#include "time.h"
+
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 3600;
+const int   daylightOffset_sec = 3600;
 
 #define LED_PIN 21
 #define NUM_LEDS 60
@@ -13,6 +19,8 @@ void setup()
     WiFiManager wifiManager;
     wifiManager.autoConnect();
     wifiManager.setConfigPortalTimeout(180);
+
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
 	FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 	FastLED.setBrightness(BRIGHTNESS);
