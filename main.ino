@@ -36,9 +36,8 @@ void loop() {
 
 void displayTime() {
   struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    return;
-  }
+  if (!getLocalTime(&timeinfo)) return;
+
   FastLED.clear();
   leds[ledLookup[((timeinfo.tm_hour * 5) + (timeinfo.tm_min / 12)) % 60]] += hourColor;
   leds[ledLookup[timeinfo.tm_min]] += minuteColor;
