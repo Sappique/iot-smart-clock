@@ -1,8 +1,7 @@
 #include <FastLED.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
-
-#include "time.h"
+#include <time.h>
 
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 3600;
