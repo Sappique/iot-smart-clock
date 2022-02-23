@@ -40,6 +40,5 @@ void displayTime() {
   FastLED.clear();
   leds[ledLookup[((timeinfo.tm_hour * 5) + (timeinfo.tm_min / 12)) % 60]] += hourColor;
   leds[ledLookup[timeinfo.tm_min]] += minuteColor;
-  Serial.println();
   FastLED.show();
 }
