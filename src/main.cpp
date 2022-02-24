@@ -54,7 +54,8 @@ void setupServer() {
 
 void setPattern() {
   if (server.hasArg("plain") == false) {
-    // handle error here
+    server.send(400, "application/json", "{\n\"status\" : \"fail\",\n\"data\" : { \"A pattern in json format is required.\" }\n}");
+    return;
   }
   String body = server.arg("plain");
   deserializeJson(jsonDoc, body);
@@ -62,6 +63,7 @@ void setPattern() {
     leds[ledLookup[i]].setRGB(jsonDoc[i][0], jsonDoc[i][1], jsonDoc[i][2]);
   }
   FastLED.show();
+  server.send(200);
 }
 
 void displayTime() {
