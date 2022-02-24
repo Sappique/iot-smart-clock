@@ -48,7 +48,7 @@ void loop() {
 }
 
 void setupServer() {
-  server.on("/pattern", HTTP_POST, setPattern);
+  server.on("/pattern", HTTP_PUT, setPattern);
   server.begin();
 }
 
