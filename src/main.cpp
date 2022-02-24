@@ -1,7 +1,15 @@
+#include "main.h"
+
+#include <ArduinoJSON.h>
 #include <FastLED.h>
+#include <WebServer.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
 #include <time.h>
+
+WebServer server(80);
+
+StaticJsonDocument<8000> jsonDoc;
 
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 3600;
@@ -28,9 +36,32 @@ void setup() {
 
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
+
+  setupServer();
+  Serial.begin(9600);
+  Serial.println("conected");
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 1000);
 }
 
 void loop() {
+  server.handleClient();
+}
+
+void setupServer() {
+  server.on("/pattern", HTTP_POST, setPattern);
+  server.begin();
+}
+
+void setPattern() {
+  if (server.hasArg("plain") == false) {
+    // handle error here
+  }
+  String body = server.arg("plain");
+  deserializeJson(jsonDoc, body);
+  for (size_t i = 0; i < 60; i++) {
+    leds[ledLookup[i]].setRGB(jsonDoc[i][0], jsonDoc[i][1], jsonDoc[i][2]);
+  }
+  FastLED.show();
 }
 
 void displayTime() {

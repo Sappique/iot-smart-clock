@@ -1,0 +1,3 @@
+void setupServer();
+
+void setPattern();
