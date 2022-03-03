@@ -63,7 +63,7 @@ void setPattern() {
     leds[ledLookup[i]].setRGB(jsonDoc[i][0], jsonDoc[i][1], jsonDoc[i][2]);
   }
   FastLED.show();
-  server.send(200);
+  server.send(204);
 }
 
 void displayTime() {
