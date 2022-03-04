@@ -48,12 +48,16 @@ void loop() {
 }
 
 void setupServer() {
+  const char * headerkeys[] = {"Content-Type"} ;
+  size_t headerkeyssize = sizeof(headerkeys)/sizeof(char*);
+  server.collectHeaders(headerkeys, headerkeyssize);
   server.on("/pattern", HTTP_PUT, setPattern);
   server.begin();
 }
 
 void setPattern() {
-  if (server.hasArg("plain") == false) {
+  Serial.println(server.header("Content-Type"));
+  if (!server.hasArg("plain") || (server.header("Content-Type") != "application/json")) {
     server.send(400, "application/json", "{\n\"status\" : \"fail\",\n\"data\" : { \"A pattern in json format is required.\" }\n}");
     return;
   }
