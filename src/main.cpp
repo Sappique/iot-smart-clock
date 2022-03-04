@@ -7,6 +7,8 @@
 #include <WiFiManager.h>
 #include <time.h>
 
+#include <base64.hpp>
+
 WebServer server(80);
 
 StaticJsonDocument<8000> jsonDoc;
@@ -48,8 +50,8 @@ void loop() {
 }
 
 void setupServer() {
-  const char * headerkeys[] = {"Content-Type"} ;
-  size_t headerkeyssize = sizeof(headerkeys)/sizeof(char*);
+  const char* headerkeys[] = {"Content-Type"};
+  size_t headerkeyssize = sizeof(headerkeys) / sizeof(char*);
   server.collectHeaders(headerkeys, headerkeyssize);
   server.on("/pattern", HTTP_PUT, setPattern);
   server.begin();
@@ -57,15 +59,31 @@ void setupServer() {
 
 void setPattern() {
   Serial.println(server.header("Content-Type"));
-  if (!server.hasArg("plain") || (server.header("Content-Type") != "application/json")) {
+  if (!server.hasArg("plain") || !((server.header("Content-Type") == "application/json") || server.header("Content-Type") == "application/base64")) {
     server.send(400, "application/json", "{\n\"status\" : \"fail\",\n\"data\" : { \"A pattern in json format is required.\" }\n}");
     return;
   }
-  String body = server.arg("plain");
-  deserializeJson(jsonDoc, body);
-  for (size_t i = 0; i < 60; i++) {
-    leds[ledLookup[i]].setRGB(jsonDoc[i][0], jsonDoc[i][1], jsonDoc[i][2]);
+
+  if (server.header("Content-Type") == "application/json") {
+    String body = server.arg("plain");
+    deserializeJson(jsonDoc, body);
+
+    for (size_t i = 0; i < 60; i++) {
+      leds[ledLookup[i]].setRGB(jsonDoc[i][0], jsonDoc[i][1], jsonDoc[i][2]);
+    }
+  } else if (server.header("Content-Type") == "application/base64") {
+    char base64[server.arg("plain").length() + 1];
+    server.arg("plain").toCharArray(base64, server.arg("plain").length() + 1);
+
+    unsigned char binary[decode_base64_length((unsigned char*)base64)];
+
+    decode_base64((unsigned char*)base64, binary);
+
+    for (size_t i = 0; i < 60; i++) {
+      leds[ledLookup[i]].setRGB(binary[i * 3], binary[i * 3 + 1], binary[i * 3 + 2]);
+    }
   }
+
   FastLED.show();
   server.send(204);
 }
